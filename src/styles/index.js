@@ -8,7 +8,6 @@ padding: 16px;
 flex: 1;
 display: flex;
 justify-content: flex-start;
-align-items: center;
 background-color: #F6F6F5;
 `;
 
@@ -16,7 +15,10 @@ export const Card = styled(View)`
     padding: 12px 16px 12px 16px;
     border-radius: 4px;
     gap: 16px;
+    margin-top: 16px;
+    max-width: 359px;
     width: 100%;
+
     height: auto;
     flex-direction: column;
 
@@ -45,13 +47,19 @@ export const StyledButton = styled(TouchableOpacity)`
     justify-content: space-between;
     align-items: center;
     padding: 8px 10px;
-    gap: 10px;
 
     width: 103px;
     height: 36px;
 
     background-color: ${COLORS.iceCream}
     border-radius: 4px;
+`;
+
+export const ImageContainer = styled(View)`
+width: 30px;
+height: 30px;
+overflow: hidden;
+border-radius: 15px
 `;
 
 
