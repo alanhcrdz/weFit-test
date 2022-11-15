@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, ListRenderItem } from 'react-native';
 import { COLORS, FONTS, SHADOWS, SIZES } from '../constants/theme';
 import { Card, Container, FlexRow, HLine, ImageContainer } from '../styles';
 
@@ -8,36 +8,76 @@ import StarIcon from 'react-native-vector-icons/Entypo';
 import DotIcon from 'react-native-vector-icons/Octicons';
 import { api } from '../services/axios';
 
-interface ReposProps {
-  id: number,
-  full_name: string,
-  description: string,
-  owner: {
-    avatar_url: string,
-  },
-  stargazers_count: number,
-  language: string,
-  html_url: string
+
+import { useSelector, useDispatch, TypedUseSelectorHook } from 'react-redux';
+import { Dispatch, IRepos, IState } from '../redux/interfaces';
+
+import { getRepos, toggleFavAction } from '../redux/actions';
+import { State, AppDispatch } from '../redux/store';
+
+
+const Item = ({ data }: {data: IRepos}) => {
+  
+  return (
+    <Card style={SHADOWS.medium} >
+      <FlexRow>
+        <Text style={{ maxWidth: '75%' }}>{data.full_name}</Text>
+
+        <ImageContainer>
+          <Image source={{ uri: data.owner.avatar_url }}
+            resizeMode='cover' style={styles.avatar} />
+        </ImageContainer>
+      </FlexRow>
+
+      <View style={{ width: '100%' }}>
+        <HLine />
+        <Text style={styles.text}>{data.description ?? '-'}</Text>
+      </View>
+      <FlexRow>
+        <View>
+          <CustomButton title={'Favoritar'} onPress={() => console.log('pressed.')} />
+        </View>
+        <View style={styles.inline}>
+          <StarIcon size={17} color={COLORS.star} name='star' />
+          <Text style={styles.text}>{data.stargazers_count}</Text>
+        </View>
+        <View style={styles.inline}>
+          <DotIcon size={17} color={COLORS.red} name='dot-fill' />
+          <Text style={styles.text}>{data.language ?? '-'}</Text>
+        </View>
+      </FlexRow>
+    </Card>
+  )
 }
 
-
-
-
 const Home = () => {
-  const [repos, setRepos] = useState<ReposProps[]>([]);
+  //const [repos, setRepos] = useState<IReposProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const isMounted = useRef<boolean>(false);
+  const isMounted = useRef(false);
+  const useAppDispatch: () => AppDispatch = useDispatch;
+  const useAppSelector: TypedUseSelectorHook<State> = useSelector
 
-  useEffect(() => {
+  const { repos, favorites } = useAppSelector(
+    (state: State | any ) => state.reposReducer
+  );
+  
+
+
+  const fetchRepos = () => useAppDispatch();
+  
+
+
+
+   useEffect(() => {
     isMounted.current = true;
     fetchRepos();
     return () => {
       isMounted.current = false;
     }
 
-  }, [])
+  }, []) 
 
-  const fetchRepos = async () => {
+   /* const fetchRepos = async () => {
     try {
       setIsLoading(true)
       const url = '/alanhcrdz/repos';
@@ -50,53 +90,28 @@ const Home = () => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }  */
 
 
-  const renderItem = ({ item }) => {
-    return (
-      <Card style={SHADOWS.medium} >
-        <FlexRow>
-          <Text style={{ maxWidth: '75%' }}>{item.owner.login}/
-            <Text style={{ fontWeight: '700'}}>{item.name}</Text>
-          </Text>
-          <ImageContainer>
-            <Image source={{ uri: item.owner.avatar_url }}
-              resizeMode='cover' style={styles.avatar} />
-          </ImageContainer>
-        </FlexRow>
+  
 
-        <View style={{ width: '100%' }}>
-          <HLine />
-          <Text style={styles.text}>{item.description?? '-'}</Text>
-        </View>
-        <FlexRow>
-          <View>
-            <CustomButton title={'Favoritar'} onPress={() => console.log('pressed.')} />
-          </View>
-          <View style={styles.inline}>
-            <StarIcon size={17} color={COLORS.star} name='star' />
-            <Text style={styles.text}>{item.stargazers_count}</Text>
-          </View>
-          <View style={styles.inline}>
-            <DotIcon size={17} color={COLORS.red} name='dot-fill' />
-            <Text style={styles.text}>{item.language?? '-'}</Text>
-          </View>
-        </FlexRow>
-      </Card>
-    )
-  }
 
+  const LoadingBar = () => (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <ActivityIndicator size={24} color={COLORS.star} /> 
+    </View>
+  )
+  const renderItem: ListRenderItem<IRepos> = ({ item }) => <Item data={item} />
 
 
   return (
     <Container>
       {isLoading ?
-        <ActivityIndicator size={24} color={COLORS.star} /> :
-
+          <LoadingBar /> :
         <FlatList
           data={repos}
           renderItem={renderItem}
+          keyExtractor={(item: IRepos | any) => item.id}
           bounces={false}
           showsVerticalScrollIndicator={false}
         />}
