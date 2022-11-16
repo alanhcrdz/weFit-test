@@ -16,11 +16,12 @@ import reposReducer, { initialState } from './reducers';
 } 
 
 
- 
+/* const rootReducer = combineReducers({
+    // @ts-ignore
+    reposReducer: persistReducer(persistConfig, reposReducer)
+}) */
 
-
-
-export const Store = createContext<IState | any>(initialState);
+ export const Store = createContext<IState | any>(initialState);
 
 export function StoreProvider({ children }:JSX.ElementChildrenAttribute | any):  JSX.Element {
     const [state, dispatch] = useReducer(reposReducer, initialState);
@@ -30,9 +31,10 @@ export function StoreProvider({ children }:JSX.ElementChildrenAttribute | any): 
             {children}
         </Store.Provider>
     )
-}
-
+} 
+//export const store = createStore(rootReducer, applyMiddleware(thunk));
+// @ts-ignore
 //export const persistor = persistStore(Store)
-/* export const store = createStore(rootReducer, applyMiddleware(thunk));
+/* 
 export type State = ReturnType<typeof reposReducer> // assign to state
 export type AppDispatch = typeof store.dispatch */

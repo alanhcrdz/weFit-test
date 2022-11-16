@@ -1,5 +1,5 @@
 import { StyleSheet, FlatList, View, ActivityIndicator, Text, Image, ListRenderItem } from 'react-native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Card, Container, FlexRow, HLine, ImageContainer } from '../styles';
 import { IRepos, IReposProps } from '../redux/interfaces'
 import { Store } from '../redux/store'
@@ -9,14 +9,11 @@ import { FONTS, SHADOWS } from '../constants/theme'
 import CustomButton from '../components/button.component';
 import StarIcon from 'react-native-vector-icons/Entypo';
 import DotIcon from 'react-native-vector-icons/Octicons';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Favorites = (): JSX.Element => {
   const { state, dispatch } = useContext(Store);
-  const [isLoading, setIsLoading] = useState(false);
-
-
-
+  
   const props: IReposProps = {
     repos: state.repos,
     store: { state, dispatch },
@@ -31,7 +28,7 @@ const Favorites = (): JSX.Element => {
   )
   const renderItem: ListRenderItem<IRepos> = ({ item }) => {
     return (
-      <Card style={SHADOWS.medium} >
+      <View  style={[styles.card, SHADOWS.medium]} >
         <FlexRow>
           <Text style={{ maxWidth: '75%' }}>{item.full_name}</Text>
 
@@ -46,9 +43,7 @@ const Favorites = (): JSX.Element => {
           <Text style={styles.text}>{item.description ?? '-'}</Text>
         </View>
         <FlexRow>
-          <View>
-            <CustomButton title={'Desfavoritar'} onPress={() => toggleFavAction(state, dispatch, item)} />
-          </View>
+         
           <View style={styles.inline}>
             <StarIcon size={17} color={COLORS.star} name='star' />
             <Text style={styles.text}>{item.stargazers_count}</Text>
@@ -58,7 +53,7 @@ const Favorites = (): JSX.Element => {
             <Text style={styles.text}>{item.language ?? '-'}</Text>
           </View>
         </FlexRow>
-      </Card>
+      </View>
     )
   }
 
@@ -100,6 +95,17 @@ const styles = StyleSheet.create({
   avatar: {
     width: '100%',
     height: '100%',
+  },
+  card: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    marginTop: 16,
+    maxWidth: 359,
+    width: '100%',
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
   }
 })
 

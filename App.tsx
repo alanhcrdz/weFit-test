@@ -1,14 +1,14 @@
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React, { useState, useEffect, useCallback } from 'react';
 import { View } from 'react-native';
 import { useFonts } from 'expo-font';
 import { Provider as PaperProvider } from 'react-native-paper';
 
-
 import { SafeArea } from './src/components/safe-area.component';
 import { Routes } from './src/routes';
 import { Provider } from 'react-redux';
 import { StoreProvider } from './src/redux/store'
-//import { PersistGate } from 'redux-persist/integration/react';
+import { PersistGate } from 'redux-persist/integration/react';
 import * as SplashScreen from 'expo-splash-screen';
 
 
@@ -59,15 +59,17 @@ export default function App() {
   }
 
   return (
-    <SafeArea>
-      <StoreProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeArea>
+        <StoreProvider>
           <PaperProvider>
             <View style={{ flex: 1 }} onLayout={onLayoutRootView}  >
               <Routes />
             </View>
           </PaperProvider>
-      </StoreProvider>
-    </SafeArea>
+        </StoreProvider>
+      </SafeArea>
+    </GestureHandlerRootView>
   );
 }
 

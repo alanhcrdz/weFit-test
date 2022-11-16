@@ -11,7 +11,7 @@ justify-content: flex-start;
 background-color: #F6F6F5;
 `;
 
-export const Card = styled(View)`
+export const Card = styled(TouchableOpacity)`
     padding: 12px 16px 12px 16px;
     border-radius: 4px;
     gap: 16px;

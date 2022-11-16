@@ -10,19 +10,23 @@ export const loadingAction = (status: IState | any) => {
     }
 }
 export const getRepos = async (dispatch: any) => {
+    dispatch(loadingAction(true))
     try {
-        dispatch(loadingAction(true))
-        const response = await api.get('/alanhcrdz/repos');
+
+        const response = await api.get('/appswefit/repos');
 
         return dispatch({
             type: ActionType.GET_REPOS,
             payload: response.data
         })
+
     } catch (error) {
         console.log(error)
     } finally {
-        dispatch:(loadingAction(false))
+        dispatch(loadingAction(false))
+
     }
+    
 
 }
 

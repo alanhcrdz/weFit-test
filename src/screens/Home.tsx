@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, ListRenderItem } from 'react-native';
+import React, { useEffect, useRef, useContext } from 'react';
+import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, ListRenderItem, Dimensions } from 'react-native';
 import { COLORS, FONTS, SHADOWS, SIZES } from '../constants/theme';
 import { Card, Container, FlexRow, HLine, ImageContainer } from '../styles';
 
@@ -8,13 +8,16 @@ import StarIcon from 'react-native-vector-icons/Entypo';
 import DotIcon from 'react-native-vector-icons/Octicons';
 
 
-import { IRepos, IReposProps } from '../redux/interfaces';
 
+import { IRepos } from '../redux/interfaces';
 import { getRepos, toggleFavAction, } from '../redux/actions';
 import { Store } from '../redux/store';
 
 
-const Home = () => {
+
+
+// @ts-ignore
+const Home = ({ navigation }) => {
   const { state, dispatch } = useContext(Store);
 
 
@@ -28,9 +31,19 @@ const Home = () => {
       <ActivityIndicator size={24} color={COLORS.star} />
     </View>
   )
+
   const renderItem: ListRenderItem<IRepos> = ({ item }) => {
     return (
-      <Card style={SHADOWS.medium} >
+      <Card activeOpacity={0.7}
+        onPress={() => navigation.navigate('Details', {
+          item,
+          id: item.id,
+          full_name: item.full_name,
+          description: item.description,
+          language: item.language,
+          url: item.html_url,
+        })}
+        style={SHADOWS.medium} >
         <FlexRow>
           <Text style={{ maxWidth: '75%' }}>{item.full_name}</Text>
 
@@ -48,7 +61,7 @@ const Home = () => {
           <View>
             <CustomButton title={state.favorites.find((fav: IRepos) => fav.id === item.id) ? 'Desfavoritar' : 'Favoritar'} onPress={() => {
               toggleFavAction(state, dispatch, item);
-              }} />
+            }} />
           </View>
           <View style={styles.inline}>
             <StarIcon size={17} color={COLORS.star} name='star' />
@@ -66,15 +79,15 @@ const Home = () => {
 
   return (
     <Container>
-      {state.showLoading ?
-        <LoadingBar /> :
-        <FlatList
-          data={state.repos}
-          renderItem={renderItem}
-          keyExtractor={(item: IRepos | any) => item.id}
-          bounces={false}
-          showsVerticalScrollIndicator={false}
-        />}
+     
+      <FlatList
+        data={state.repos}
+        renderItem={renderItem}
+        keyExtractor={(item: IRepos | any) => item.id}
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+      />
+     
 
     </Container>
 
@@ -98,5 +111,6 @@ const styles = StyleSheet.create({
   }
 })
 
+// Exportação que permite ter o gesto aplicado
 export default Home;
 
