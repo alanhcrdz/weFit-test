@@ -1,5 +1,10 @@
 export type Dispatch = React.Dispatch<IAction>
 
+export interface IState {
+    repos: Array<IRepos>,
+    favorites: Array<IRepos>,
+    showLoading: boolean
+}
 export interface IRepos {
     id: number
     name: string, 
@@ -11,10 +16,7 @@ export interface IRepos {
     html_url: string
 }
 
-export interface IState {
-    repos: Array<IRepos>,
-    favorites: Array<IRepos>
-}
+
 
 export interface IAction {
     type: string,
@@ -25,5 +27,6 @@ export interface IReposProps {
     repos: Array<IRepos>,
     store: {state: IState, dispatch: Dispatch },
     toggleFavAction: (state: IState, dispatch: Dispatch, repo: IRepos) => IAction,
-    favorites: Array<IRepos>
+    favorites: Array<IRepos>,
+    showLoading: boolean
 }

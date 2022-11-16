@@ -5,12 +5,13 @@ import { IAction, IState } from "./interfaces";
 
 
 
-const initialState: IState = {
+export const initialState: IState = {
     repos: [],
-    favorites: []
+    favorites: [],
+    showLoading: false,
 }
 
-export const reposReducer = (state: IState = initialState, action: IAction): IState => {
+export function reposReducer (state: IState, action: IAction): IState {
     switch (action.type) {
         case ActionType.GET_REPOS:
             return {
@@ -28,6 +29,11 @@ export const reposReducer = (state: IState = initialState, action: IAction): ISt
                 favorites: action.payload
 
             }
+            case ActionType.TOGGLE_LOADING:
+                return {
+                    ...state,
+                    showLoading: action.payload
+                }
         default:
             return state
     }

@@ -7,8 +7,8 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeArea } from './src/components/safe-area.component';
 import { Routes } from './src/routes';
 import { Provider } from 'react-redux';
-import { store, persistor } from './src/redux/store'
-import { PersistGate } from 'redux-persist/integration/react';
+import { StoreProvider } from './src/redux/store'
+//import { PersistGate } from 'redux-persist/integration/react';
 import * as SplashScreen from 'expo-splash-screen';
 
 
@@ -34,7 +34,7 @@ export default function App() {
   useEffect(() => {
     async function prepare() {
       try {
-        await new Promise(resolve => setTimeout(resolve, 3000))
+        await new Promise((resolve: any) => setTimeout(resolve, 3000))
       } catch (error) {
         console.log(error)
       } finally {
@@ -60,15 +60,13 @@ export default function App() {
 
   return (
     <SafeArea>
-      <Provider store={store} >
-        <PersistGate persistor={persistor} >
+      <StoreProvider>
           <PaperProvider>
             <View style={{ flex: 1 }} onLayout={onLayoutRootView}  >
               <Routes />
             </View>
           </PaperProvider>
-        </PersistGate>
-      </Provider>
+      </StoreProvider>
     </SafeArea>
   );
 }

@@ -2,6 +2,7 @@ export enum ActionType {
     GET_REPOS = "GET_REPOS",
     ADD_FAVORITES = "ADD_FAVORITES",
     REMOVE_FAVORITES = "REMOVE_FAVORITES",
+    TOGGLE_LOADING = "TOGGLE_LOADING"
 }
 
 interface GetReposAction {
@@ -17,7 +18,11 @@ interface AddFavoriteAction {
 interface RemoveFavoriteAction {
     id: string,
     type: ActionType.REMOVE_FAVORITES,
-    payload: any
+    payload: string
+}
+interface LoadAction {
+    type: ActionType.TOGGLE_LOADING,
+    payload: boolean
 }
 
-export type Action = GetReposAction | AddFavoriteAction | RemoveFavoriteAction
+export type Action = GetReposAction | AddFavoriteAction | RemoveFavoriteAction | LoadAction
