@@ -18,8 +18,16 @@ const Details = ({ navigation, route }) => {
     const { item, id, full_name, description, language, url, favorites } = route.params;
     const { state, dispatch } = useContext(Store);
 
-    const isBookmarked = favorites.find((fav: IRepos) => fav.id === id)
+    const isBookmarked = favorites.find((fav: IRepos) => fav.id == id)
    
+    const removeBookMarks = async (key: IRepos | any) => {
+        try {
+          await AsyncStorage.removeItem('itemList');
+          return true;
+        } catch (error) {
+          return false;
+        }
+      }
 
     return (
         <Container>
@@ -55,13 +63,10 @@ const Details = ({ navigation, route }) => {
                         borderRadius: 4,
 
                     }}
-                    onPress={async () => {
-                        try {
-                            toggleFavAction(state, dispatch, item)
-                            await AsyncStorage.removeItem('itemList');
-                        } catch (error) {
-                            console.log(error)
-                        }
+                    onPress={() => {
+                        toggleFavAction(state, dispatch, item)
+                        removeBookMarks(item);
+                          
                     }}
                 >{isBookmarked ? 'Desfavoritar' : 'Favoritar'}</Button>
             </View>

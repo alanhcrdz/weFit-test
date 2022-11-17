@@ -1,4 +1,4 @@
-import Reac, { useContext, useRef, useState } from 'react';
+import Reac, { useContext } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import { COLORS, FONTS } from '../constants';

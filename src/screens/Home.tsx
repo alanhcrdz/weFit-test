@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, useCallback } from 'react';
+import React, { useEffect, useContext, useState, useCallback, memo } from 'react';
 import {
   View,
   Text,
@@ -26,7 +26,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Home = () => {
-  const { state, dispatch, user, setUser } = useContext(Store);
+  const { state, dispatch, user } = useContext(Store);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [repos, setRepos] = useState([]);
@@ -39,10 +39,14 @@ const Home = () => {
   function wait(timeout: number) {
     return new Promise((resolve: any) => setTimeout(resolve, timeout));
   }
+
   useEffect(() => {
     async function initialize() {
       state.repos.length === 0 && await getRepos(dispatch);
-      setRepos(state.repos);
+
+      api.get(`/${user}/repos`).then((response) => {
+        setRepos(state.repos);
+      })
       setFavorites(state.favorites);
     }
     initialize()
@@ -58,7 +62,18 @@ const Home = () => {
 
 
 
-  const saveBookMarks = async (item: Object) => {
+  const saveBookMarks = async (item: Object | any) => {
+
+    // remove item when add to favorites
+    function removeValue(value: Object | any, index: number, array: IRepos | any) {
+
+      if (value === item) {
+        array.splice(index, 1)
+        return true
+      }
+      return false
+
+    }
     try {
       // @ts-ignore
       storageDataList.push(item);
@@ -66,18 +81,16 @@ const Home = () => {
       const output = JSON.stringify(storageDataList);
 
       await AsyncStorage.setItem('itemList', output)
+
     } catch (error) {
+      console.log(error)
+    } finally {
+      // @ts-ignore
+      repos.filter(removeValue)
 
     }
   }
-  const removeBookMarks = async () => {
-    try {
-      await AsyncStorage.removeItem('itemList');
-      setStorageDataList([])
-    } catch (error) {
-      console.log(error)
-    }
-  }
+
 
 
 
@@ -93,7 +106,7 @@ const Home = () => {
       <>
         <View style={[SHADOWS.medium, styles.card]} >
           <FlexRow>
-            <Text style={{ maxWidth: '75%' }}>{item.full_name}</Text>
+            <Text style={{ maxWidth: '75%' }}>{item.owner?.login}/<Text style={styles.bold}>{item.name}</Text></Text>
 
             <ImageContainer>
               <Image source={{ uri: item.owner?.avatar_url }}
@@ -112,8 +125,6 @@ const Home = () => {
                 toggleFavAction(state, dispatch, item);
                 if (!isInFav) {
                   saveBookMarks(item);
-                } else {
-                  removeBookMarks()
                 }
 
 
@@ -152,6 +163,10 @@ const Home = () => {
             keyExtractor={(item: IRepos | any) => item.id}
             bounces={false}
             showsVerticalScrollIndicator={false}
+            initialNumToRender={5}
+            maxToRenderPerBatch={10}
+            removeClippedSubviews={true}
+            updateCellsBatchingPeriod={100}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
@@ -189,9 +204,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
   },
+  bold: {
+    fontFamily: FONTS.interBold,
+    fontWeight: '400',
+    lineHeight: 15,
+
+    color: '#070707',
+  }
 
 })
 
 // Exportação que permite ter o gesto aplicado
-export default Home;
+export default memo(Home);
 

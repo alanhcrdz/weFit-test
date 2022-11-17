@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from 'react'
+import React, { useContext, useEffect, useState, useCallback } from 'react'
 import {
   StyleSheet,
   FlatList,
@@ -7,6 +7,7 @@ import {
   Text,
   Image,
   ListRenderItem,
+  RefreshControl
 
 } from 'react-native'
 import { Card, Container, FlexRow, HLine, ImageContainer } from '../styles';
@@ -18,30 +19,40 @@ import { FONTS, SHADOWS } from '../constants/theme'
 import StarIcon from 'react-native-vector-icons/Entypo';
 import DotIcon from 'react-native-vector-icons/Octicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Button } from 'react-native-paper';
 
 const Favorites = ({ navigation }: any): JSX.Element => {
   const { state, } = useContext(Store);
   const [favorites, setFavorites] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
+
+  
 
   useEffect(() => {
     //retrieve
-    async function getSavedFavorites() {
-      try {
+    async function initialize() {
+      
         const data = await AsyncStorage.getItem('itemList')
-        if (data !== null) {
-          const output = JSON.parse(data);
-          setFavorites(output)
-
-        }
-      } catch (error) {
-        console.log(error)
-      }
+       if (data !== null) {
+        const output = JSON.parse(data);
+        setFavorites(output);
+      }   
 
     }
-    getSavedFavorites()
+    initialize()
   }, [favorites])
+
+  function wait(timeout: number) {
+    return new Promise((resolve: any) => setTimeout(resolve, timeout));
+  }
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => {
+      setRefreshing(false);
+    });
+  }, []);
 
   const LoadingBar = () => (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -52,18 +63,19 @@ const Favorites = ({ navigation }: any): JSX.Element => {
     return (
       <Card activeOpacity={0.7}
         onPress={() => navigation.navigate('Details', {
+          id: item.id,
           item,
           favorites,
-          id: item.id,
+          name: item.name,
           full_name: item.full_name,
           description: item.description,
           language: item.language,
           url: item.html_url,
-          login: item.owner.login,
+          login: item.owner?.login,
         })}
         style={SHADOWS.medium} >
         <FlexRow>
-          <Text style={{ maxWidth: '75%' }}>{item.full_name}</Text>
+          <Text style={{ maxWidth: '75%' }}>{item.owner.login}/<Text style={styles.bold}>{item.name}</Text></Text>
 
           <ImageContainer>
             <Image source={{ uri: item.owner?.avatar_url }}
@@ -108,6 +120,9 @@ const Favorites = ({ navigation }: any): JSX.Element => {
               keyExtractor={(item: IRepos | any) => item.id}
               bounces={false}
               showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
             />
           )}
 
@@ -130,6 +145,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  bold: {
+    fontFamily: FONTS.interBold,
+    fontWeight: '400',
+    lineHeight: 15,
+
+    color: '#070707',
+  }
 
 })
 
