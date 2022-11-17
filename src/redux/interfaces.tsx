@@ -10,10 +10,10 @@ export interface IRepos {
     name: string, 
     full_name: string, 
     description: string, 
-    owner: {avatar_url: string}, 
+    owner: { avatar_url: string, login: string }, 
     stargazers_count: number, 
     language: string,
-    html_url: string
+    html_url: string,
 }
 
 

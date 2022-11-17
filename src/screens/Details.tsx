@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Alert, StyleSheet, Text, View } from 'react-native'
 import React, { useContext } from 'react'
 import { Container } from '../styles'
 import { COLORS, FONTS } from '../constants';
@@ -8,21 +8,23 @@ import { Button } from 'react-native-paper';
 import { Store } from '../redux/store';
 import { IRepos } from '../redux/interfaces';
 import { toggleFavAction, } from '../redux/actions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
 // @ts-ignore
 const Details = ({ navigation, route }) => {
 
-    const { item, id,  full_name, description, language, url } = route.params;
+    const { item, id, full_name, description, language, url, favorites } = route.params;
     const { state, dispatch } = useContext(Store);
 
-    const isBookmarked = state.favorites.find((fav: IRepos) => fav.id === id)
+    const isBookmarked = favorites.find((fav: IRepos) => fav.id === id)
+   
 
     return (
         <Container>
             <View>
-                <Text style={[styles.text, { marginTop: 16 }]}>{full_name}</Text>
+                <Text style={[styles.title, { marginTop: 16 }]}>{full_name}</Text>
                 <Text style={[styles.text, { marginTop: 16 }]}>{description}</Text>
 
             </View>
@@ -35,25 +37,32 @@ const Details = ({ navigation, route }) => {
                     onPress={() => navigation.navigate('WebScreen', {
                         url
                     })}
-                    labelStyle={{color:'#1976D2'}}
+                    labelStyle={{ color: '#1976D2' }}
 
                     icon={'link'}
                     mode='text'
                     contentStyle={{ flexDirection: 'row-reverse' }}
                 >Ver repositório</Button>
                 <Button
-                color={isBookmarked ? 'transparent' : '#FFD02C'}
-                    labelStyle={{color: '#000'}}
+                    color={isBookmarked ? 'transparent' : '#FFD02C'}
+                    labelStyle={{ color: '#000' }}
                     icon={isBookmarked ? 'star-outline' : 'star'}
                     mode={isBookmarked ? 'outlined' : 'contained'}
-                    contentStyle={{ 
-                        flexDirection: 'row-reverse', 
-                        height: 42, 
-                        borderWidth: isBookmarked ? 1 : 0, 
+                    contentStyle={{
+                        flexDirection: 'row-reverse',
+                        height: 42,
+                        borderWidth: isBookmarked ? 1 : 0,
                         borderRadius: 4,
-                        
+
                     }}
-                    onPress={() => toggleFavAction(state, dispatch, item )}
+                    onPress={async () => {
+                        try {
+                            toggleFavAction(state, dispatch, item)
+                            await AsyncStorage.removeItem('itemList');
+                        } catch (error) {
+                            console.log(error)
+                        }
+                    }}
                 >{isBookmarked ? 'Desfavoritar' : 'Favoritar'}</Button>
             </View>
         </Container>
@@ -63,9 +72,14 @@ const Details = ({ navigation, route }) => {
 export default Details
 
 const styles = StyleSheet.create({
-    text: {
+    title: {
         fontFamily: FONTS.interRegular,
         color: COLORS.black,
+        marginLeft: 6
+    },
+    text: {
+        fontFamily: FONTS.interRegular,
+        color: COLORS.grayText,
         marginLeft: 6
     },
     inline: {

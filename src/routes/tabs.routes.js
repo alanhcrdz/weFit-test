@@ -8,6 +8,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Favorites from '../screens/Favorites';
 import StackRoutes from './stack.routes';
 import { COLORS, FONTS } from '../constants';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
@@ -33,16 +34,27 @@ const TabRoutes = () => {
             }}>
             <Tab.Screen name='Repositórios'
                 component={StackRoutes}
-                options={{
-                    tabBarIcon: ({ focused }) => (
-                        <AntDesign
-                            name='github'
-                            color={focused ? COLORS.lightBlue : "rgba(0,0,0,0.6)"}
-                            size={24}
-
-                        />
-                    ),
-                }}
+                options={(route) => ({
+                   
+                   
+                        tabBarIcon: ({ focused }) => (
+                            <AntDesign
+                                name='github'
+                                color={focused ? COLORS.lightBlue : "rgba(0,0,0,0.6)"}
+                                size={24}
+    
+                            />
+                        ),
+                        tabBarStyle: ((route) => {
+                            const routeName = getFocusedRouteNameFromRoute(route) ?? "";
+                            if (routeName === 'Details') {
+                                return { display: 'none' }
+                            }
+                            return { backgroundColor: '#fff' }
+                        })(route), 
+                        
+                    }
+                )}
             />
             <Tab.Screen name='Favoritos'
                 component={Favorites}

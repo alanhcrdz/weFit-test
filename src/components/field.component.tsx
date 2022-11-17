@@ -1,26 +1,36 @@
-import Reac, { useRef, useState } from 'react';
+import Reac, { useContext, useRef, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
 import { COLORS, FONTS } from '../constants';
+import { Store } from '../redux/store';
 
 
-interface FieldProps {}
-interface TextProps {}
+interface FieldProps {
+  onUpdateUser: () => {}
+}
 
-export default function Field ({}: FieldProps, ) {
-  const [text, setText] = useState<TextProps | any>('');
+export default function Field ({onUpdateUser}: FieldProps, ) {
 
-  const bottomSheetRef = useRef(null);
+  const { user, setUser } = useContext(Store);
 
   return (
     <>
     <View style={styles.container}>
       <Text style={styles.text}> Alterar usuário selecionado </Text>
-      <TextInput placeholder='Nome do usuário' value={text} onChangeText={() => setText(text)} />
+      <TextInput 
+      autoCapitalize='none' 
+      label={'Nome do usuário'}
+      placeholder='Nome do usuário' value={user} onChangeText={(text) => setUser(text)} />
     </View>
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-      <Button mode='text'>Cancelar</Button>
-      <Button mode='contained'>Salvar</Button>
+      <Button 
+      labelStyle={{color: '#1976D2'}}
+      onPress={onUpdateUser} 
+      mode='text'>Cancelar</Button>
+      <Button 
+      style={{backgroundColor: '#1976D2', width: 174, borderRadius: 4}}
+      onPress={onUpdateUser}
+       mode='contained'>Salvar</Button>
     </View>
     </>
   );

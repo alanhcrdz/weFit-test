@@ -1,10 +1,6 @@
 import { ActionType } from "./action-types"
 import { IAction, IState } from "./interfaces";
 
-
-
-
-
 export const initialState: IState = {
     repos: [],
     favorites: [],
@@ -23,13 +19,13 @@ export function reposReducer (state: IState, action: IAction): IState {
                 ...state,
                 favorites: [...state.favorites, action.payload]
             };
-        case ActionType.REMOVE_FAVORITES:
+        case ActionType.UNFAVORITE:
             return {
                 ...state,
                 favorites: action.payload
 
             }
-            case ActionType.TOGGLE_LOADING:
+                case ActionType.TOGGLE_LOADING:
                 return {
                     ...state,
                     showLoading: action.payload

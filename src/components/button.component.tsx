@@ -5,8 +5,12 @@ import { StyledButton } from '../styles';
 import StarIcon from 'react-native-vector-icons/Entypo';
 import { COLORS, FONTS, SIZES } from '../constants';
 
+interface CustomButtonProps {
+    title: string,
+    onPress: () => {} | any
+}
 
-const CustomButton = ({ title, onPress }) => {
+export default function CustomButton  ({ title, onPress }: CustomButtonProps) {
     return (
         <StyledButton 
         labelStyle={{ fontWeight: '700' }}
@@ -27,5 +31,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default CustomButton;
 

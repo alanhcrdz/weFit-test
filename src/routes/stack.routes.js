@@ -19,8 +19,6 @@ const StackRoutes = () => {
   const { height } = Dimensions.get('window');
   const bottomSheetRef = useRef(null);
 
-
-
   return (
     <>
     <Stack.Navigator>
@@ -63,7 +61,7 @@ const StackRoutes = () => {
         handleIndicatorStyle={{ backgroundColor: '#555' }}
         enableHandlePanningGesture
       >
-        <Field />
+        <Field onUpdateUser={() => bottomSheetRef.current?.close()} />
       </BottomSheet>
     </>
 
