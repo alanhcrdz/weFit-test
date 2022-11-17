@@ -22,26 +22,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Favorites = ({ navigation }: any): JSX.Element => {
   const { state, } = useContext(Store);
   const [favorites, setFavorites] = useState([]);
-const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  //retrieve
-  const getSavedFavorites = async () => {
-     try {
-      const data = await AsyncStorage.getItem('itemList')
-      if (data !== null) {
-        const output = JSON.parse(data);
-        setFavorites(output)
-        
-      }   
-    } catch (error) {
-      console.log(error)
-    }  
 
-  }
   useEffect(() => {
-    getSavedFavorites();
-    
-  }, [])
+    //retrieve
+    async function getSavedFavorites() {
+      try {
+        const data = await AsyncStorage.getItem('itemList')
+        if (data !== null) {
+          const output = JSON.parse(data);
+          setFavorites(output)
+
+        }
+      } catch (error) {
+        console.log(error)
+      }
+
+    }
+    getSavedFavorites()
+  }, [favorites])
 
   const LoadingBar = () => (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -101,15 +101,15 @@ const [isLoading, setIsLoading] = useState(false);
           </View>
         ) :
         isLoading ? (<LoadingBar />) :
-        (
-          <FlatList
-            data={favorites}
-            renderItem={renderItem}
-            keyExtractor={(item: IRepos | any) => item.id}
-            bounces={false}
-            showsVerticalScrollIndicator={false}
-          />
-        )}
+          (
+            <FlatList
+              data={favorites}
+              renderItem={renderItem}
+              keyExtractor={(item: IRepos | any) => item.id}
+              bounces={false}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
 
     </Container>
   )

@@ -30,32 +30,25 @@ const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [repos, setRepos] = useState([]);
-  const [storageDataList] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const [storageDataList, setStorageDataList] = useState([]);
 
 
 
-  const containerStyle = { backgroundColor: 'white', padding: 20, height: 300 };
 
   function wait(timeout: number) {
     return new Promise((resolve: any) => setTimeout(resolve, timeout));
   }
-   /*  useEffect(() => {
-    state.repos.length === 0 && getRepos(dispatch)
-  }, []);  */
-
-   const fetchRepos = async () => {
-    try {
-      setLoading(true);
-      await api.get(`/${user}/repos`)
-        .then((response) => {
-          setRepos(response.data);
-        })
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    async function initialize() {
+      state.repos.length === 0 && await getRepos(dispatch);
+      setRepos(state.repos);
+      setFavorites(state.favorites);
     }
-  } 
+    initialize()
+  }, [repos]);
+
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     wait(2000).then(() => {
@@ -63,9 +56,7 @@ const Home = () => {
     });
   }, []);
 
-  useEffect(() => {
-    fetchRepos();
-  }, [setUser]);
+
 
   const saveBookMarks = async (item: Object) => {
     try {
@@ -81,9 +72,10 @@ const Home = () => {
   }
   const removeBookMarks = async () => {
     try {
-      await AsyncStorage.removeItem('itemList')
+      await AsyncStorage.removeItem('itemList');
+      setStorageDataList([])
     } catch (error) {
-console.log(error)
+      console.log(error)
     }
   }
 
@@ -115,15 +107,15 @@ console.log(error)
           </View>
           <FlexRow>
             <View>
-              <CustomButton title={state.favorites.find((fav: IRepos) => fav.id === item.id) ? 'Desfavoritar' : 'Favoritar'} onPress={() => {
-                const isInFav = state.favorites.find((fav: IRepos) => fav.id === item.id)
+              <CustomButton title={favorites.find((fav: IRepos) => fav.id === item.id) ? 'Desfavoritar' : 'Favoritar'} onPress={() => {
+                const isInFav = favorites.find((fav: IRepos) => fav.id === item.id)
                 toggleFavAction(state, dispatch, item);
                 if (!isInFav) {
                   saveBookMarks(item);
                 } else {
                   removeBookMarks()
                 }
-               
+
 
               }} />
             </View>
